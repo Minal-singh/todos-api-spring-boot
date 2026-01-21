@@ -1,48 +1,65 @@
 package com.minal.todo.services;
 
+import com.minal.todo.dto.UserRequestDTO;
+import com.minal.todo.dto.UserResponseDTO;
+import com.minal.todo.dto.UserUpdateDTO;
+import com.minal.todo.exceptions.UserAlreadyExistsException;
+import com.minal.todo.exceptions.UserNotFoundException;
+import com.minal.todo.mapper.UserMapper;
 import com.minal.todo.models.UserModel;
 import com.minal.todo.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserMapper userMapper, UserRepository userRepository){
+        this.userMapper = userMapper;
         this.userRepository = userRepository;
     }
 
-    public Iterable<UserModel> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers(){
+        return userRepository.findAll().stream()
+                .map(userMapper::toDto).collect(Collectors.toList());
     }
 
-    public Optional<UserModel> getUserByUserName(String userName){
-        return userRepository.findByUserName(userName);
+    public UserResponseDTO getUserByUserName(String userName){
+        UserModel user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return userMapper.toDto(user);
     }
 
-    public void createUser(UserModel newUser){
-        userRepository.save(newUser);
-    }
-
-    public Optional<UserModel> updateUser(String userName, UserModel newUser){
-        UserModel oldUser = userRepository.findByUserName(userName).orElse(null);
-        if (oldUser != null){
-            if (newUser.getUserName() != null && !newUser.getUserName().trim().isEmpty()) {
-                oldUser.setUserName(newUser.getUserName().trim());
-            }
-            if (newUser.getPassword() != null && !newUser.getPassword().trim().isEmpty()) {
-                oldUser.setPassword(newUser.getPassword().trim());
-            }
-            userRepository.save(oldUser);
-            return Optional.of(oldUser);
+    public UserResponseDTO createUser(UserRequestDTO userDto){
+        if (userRepository.findByUserName(userDto.getUserName()).isPresent()){
+            throw new UserAlreadyExistsException("User exists");
         }
-        return Optional.empty();
+        UserModel user = userMapper.toEntity(userDto);
+        UserModel saved = userRepository.save(user);
+        return userMapper.toDto(saved);
+    }
+
+    public UserResponseDTO updateUser(String userName, UserUpdateDTO userDto){
+        UserModel oldUser = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (userDto.getUserName()!=null && !userDto.getUserName().trim().isEmpty()) {
+            oldUser.setUserName(userDto.getUserName().trim());
+        }
+        if (userDto.getPassword()!=null && !userDto.getPassword().trim().isEmpty()) {
+            oldUser.setPassword(userDto.getPassword().trim());
+        }
+        UserModel saved = userRepository.save(oldUser);
+        return userMapper.toDto(saved);
     }
 
     public void deleteUser(String userName){
-        userRepository.deleteByUserName(userName);
+        UserModel user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        userRepository.deleteByUserName(user.getUserName());
     }
 }
