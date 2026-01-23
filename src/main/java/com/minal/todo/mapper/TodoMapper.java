@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TodoMapper {
-    public TodoResponseDTO toDto(TodoModel todo){
+    public TodoResponseDTO toDto(TodoModel todo) {
         return new TodoResponseDTO(
                 todo.getId(),
                 todo.getTitle(),
@@ -15,7 +15,7 @@ public class TodoMapper {
         );
     }
 
-    public TodoModel toEntity(TodoRequestDTO todoDTO){
+    public TodoModel toEntity(TodoRequestDTO todoDTO) {
         TodoModel todo = new TodoModel();
         todo.setTitle(todoDTO.getTitle());
         todo.setCompleted(todoDTO.getCompleted());

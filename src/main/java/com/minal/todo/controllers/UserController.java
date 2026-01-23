@@ -21,30 +21,30 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAll(){
+    public ResponseEntity<List<UserResponseDTO>> getAll() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{userName}")
-    public ResponseEntity<?> getByUserName(@PathVariable String userName){
+    public ResponseEntity<?> getByUserName(@PathVariable String userName) {
         UserResponseDTO user = userService.getUserByUserName(userName);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserRequestDTO userDto){
+    public ResponseEntity<?> createUser(@RequestBody UserRequestDTO userDto) {
         UserResponseDTO user = userService.createUser(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping("/{userName}")
-    public ResponseEntity<?> updateUser(@PathVariable String userName, @RequestBody UserUpdateDTO userDto){
+    public ResponseEntity<?> updateUser(@PathVariable String userName, @RequestBody UserUpdateDTO userDto) {
         UserResponseDTO user = userService.updateUser(userName, userDto);
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{userName}")
-    public ResponseEntity<?> deleteTodo(@PathVariable String userName){
+    public ResponseEntity<?> deleteTodo(@PathVariable String userName) {
         userService.deleteUser(userName);
         return ResponseEntity.noContent().build();
     }

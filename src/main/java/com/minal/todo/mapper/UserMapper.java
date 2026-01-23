@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
-    public UserModel toEntity(UserRequestDTO userDto){
+    public UserModel toEntity(UserRequestDTO userDto) {
         UserModel user = new UserModel();
         user.setUserName(userDto.getUserName());
         user.setPassword(userDto.getPassword());
         return user;
     }
 
-    public UserResponseDTO toDto(UserModel user){
+    public UserResponseDTO toDto(UserModel user) {
         return new UserResponseDTO(
                 user.getId(),
                 user.getUserName(),
@@ -26,7 +26,7 @@ public class UserMapper {
         );
     }
 
-    public TodoResponseDTO todoToDto(TodoModel todo){
+    public TodoResponseDTO todoToDto(TodoModel todo) {
         return new TodoResponseDTO(
                 todo.getId(),
                 todo.getTitle(),
