@@ -23,13 +23,13 @@ public class TodoService {
             TodoRepository todoRepository,
             TodoMapper todoMapper,
             UserRepository userRepository
-    ){
+    ) {
         this.todoRepository = todoRepository;
         this.todoMapper = todoMapper;
         this.userRepository = userRepository;
     }
 
-    public TodoResponseDTO getTodoById(Long id, String userName){
+    public TodoResponseDTO getTodoById(Long id, String userName) {
         UserModel user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -39,7 +39,7 @@ public class TodoService {
         return todoMapper.toDto(todo);
     }
 
-    public TodoResponseDTO createTodo(TodoRequestDTO newTodo, String userName){
+    public TodoResponseDTO createTodo(TodoRequestDTO newTodo, String userName) {
         UserModel user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -49,7 +49,7 @@ public class TodoService {
         return todoMapper.toDto(saved);
     }
 
-    public TodoResponseDTO updateTodo(Long id, String userName, TodoUpdateDTO newTodo){
+    public TodoResponseDTO updateTodo(Long id, String userName, TodoUpdateDTO newTodo) {
         UserModel user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -66,7 +66,7 @@ public class TodoService {
         return todoMapper.toDto(saved);
     }
 
-    public void deleteTodo(Long id, String userName){
+    public void deleteTodo(Long id, String userName) {
         UserModel user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
