@@ -8,11 +8,13 @@ import com.minal.todo.services.TodoService;
 import com.minal.todo.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/{userName}/todos")
+@RequestMapping("/todos")
 public class TodoController {
 
     private final TodoService todoService;
@@ -24,32 +26,32 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@PathVariable String userName) {
-        UserResponseDTO user = userService.getUserByUserName(userName);
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal UserDetails userDetails) {
+        UserResponseDTO user = userService.getUserByUserName(userDetails.getUsername());
         return ResponseEntity.ok(user.getTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id, @PathVariable String userName) {
-        TodoResponseDTO todo = todoService.getTodoById(id, userName);
+    public ResponseEntity<?> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        TodoResponseDTO todo = todoService.getTodoById(id, userDetails.getUsername());
         return ResponseEntity.ok(todo);
     }
 
     @PostMapping
-    public ResponseEntity<?> createTodo(@PathVariable String userName, @RequestBody TodoRequestDTO newTodo) {
-        TodoResponseDTO todo = todoService.createTodo(newTodo, userName);
+    public ResponseEntity<?> createTodo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody TodoRequestDTO newTodo) {
+        TodoResponseDTO todo = todoService.createTodo(newTodo, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(todo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTodo(@PathVariable String userName, @PathVariable Long id, @RequestBody TodoUpdateDTO updatedTodo) {
-        TodoResponseDTO todo = todoService.updateTodo(id, userName, updatedTodo);
+    public ResponseEntity<?> updateTodo(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody TodoUpdateDTO updatedTodo) {
+        TodoResponseDTO todo = todoService.updateTodo(id, userDetails.getUsername(), updatedTodo);
         return ResponseEntity.ok(todo);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTodo(@PathVariable Long id, @PathVariable String userName) {
-        todoService.deleteTodo(id, userName);
+    public ResponseEntity<?> deleteTodo(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        todoService.deleteTodo(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 }

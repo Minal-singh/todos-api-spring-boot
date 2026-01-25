@@ -44,6 +44,9 @@ public class TodoService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         TodoModel todo = todoMapper.toEntity(newTodo);
+        if (newTodo.getCompleted() == null) {
+            todo.setCompleted(false);
+        }
         todo.setUser(user);
         TodoModel saved = todoRepository.save(todo);
         return todoMapper.toDto(saved);
