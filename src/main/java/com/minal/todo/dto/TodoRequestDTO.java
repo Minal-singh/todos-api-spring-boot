@@ -12,5 +12,5 @@ public class TodoRequestDTO {
 
     @NonNull
     private String title;
-    private Boolean completed = false;
+    private Boolean completed;
 }
