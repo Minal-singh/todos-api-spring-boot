@@ -27,6 +27,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health-check").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/users/get-all").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ).httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
