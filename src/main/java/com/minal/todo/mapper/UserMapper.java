@@ -22,6 +22,7 @@ public class UserMapper {
         return new UserResponseDTO(
                 user.getId(),
                 user.getUserName(),
+                user.getRole(),
                 user.getTodos().stream().map(this::todoToDto).collect(Collectors.toList())
         );
     }

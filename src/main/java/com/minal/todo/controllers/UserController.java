@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/users")
@@ -21,13 +23,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    // TODO: convert to admin-only endpoint
-    /*
     @GetMapping("/get-all")
     public ResponseEntity<List<UserResponseDTO>> getAll() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        return ResponseEntity.ok(userService.getAllUsers());
     }
-    */
+
 
     @GetMapping
     public ResponseEntity<?> getByUserName(@AuthenticationPrincipal UserDetails userDetails) {
