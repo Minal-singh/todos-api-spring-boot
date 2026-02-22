@@ -5,6 +5,7 @@ import com.minal.todo.dto.UserResponseDTO;
 import com.minal.todo.services.UserDetailsServiceImpl;
 import com.minal.todo.services.UserService;
 import com.minal.todo.utils.JWTUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Public APIs", description = "For unauthenticated users")
 public class PublicEndpointsController {
 
     private final AuthenticationManager authenticationManager;
@@ -42,7 +44,7 @@ public class PublicEndpointsController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserRequestDTO userDto){
+    public ResponseEntity<String> login(@RequestBody UserRequestDTO userDto) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userDto.getUserName(), userDto.getPassword())

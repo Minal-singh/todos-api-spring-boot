@@ -6,6 +6,7 @@ import com.minal.todo.dto.TodoUpdateDTO;
 import com.minal.todo.dto.UserResponseDTO;
 import com.minal.todo.services.TodoService;
 import com.minal.todo.services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/todos")
+@Tag(name = "Todo APIs")
 public class TodoController {
 
     private final TodoService todoService;
