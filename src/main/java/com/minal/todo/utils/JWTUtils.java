@@ -21,15 +21,15 @@ public class JWTUtils {
     @Value(("${security.jwt.expiration-time}"))
     private int expirationTime;
 
-    private Key getSigningKey(){
+    private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String extractUserName(String token){
+    public String extractUserName(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -53,15 +53,15 @@ public class JWTUtils {
                 .compact();
     }
 
-    public Date extractExpiration(String token){
+    public Date extractExpiration(String token) {
         return extractAllClaims(token).getExpiration();
     }
 
-    private Boolean isTokenExpired(String token){
+    private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token){
+    public Boolean validateToken(String token) {
         return !isTokenExpired(token);
     }
 }
