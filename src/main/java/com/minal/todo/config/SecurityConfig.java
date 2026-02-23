@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/health-check").permitAll()
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/users/get-all").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ).csrf(AbstractHttpConfigurer::disable)
