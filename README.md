@@ -1,15 +1,19 @@
 # Todo API 🚀
 
-**Todo API** built with **Spring Boot 4.x + JPA + PostgreSQL**
+**Todo API** built with **Spring Boot 4.x + JPA + PostgreSQL + OpenAPI/Swagger**
+
+Todo API now features JWT authentication, separate public/admin endpoints, and auto-generated Swagger documentation.
 
 ## ✨ Features
 
-- ✅ **CRUD operations** for Todos & Users
-- 🗄 **PostgreSQL** with JPA/Hibernate
-- 🔐 **Secure environment configuration**
-- 🧪 **Maven wrapper** (no local Maven needed)
-- 📱 **RESTful API** endpoints
-- ⚡ **Auto schema generation**
+- ✅ **CRUD operations** for Todos & Users with DTOs
+- 🗄 **PostgreSQL** with JPA/Hibernate auto schema generation
+- 🔐 **JWT Bearer authentication** (login/signup required)
+- 📱 **RESTful API** with security tags (Public/Admin/User APIs)
+- 📖 **Swagger UI** for interactive API documentation & testing
+- ✅ **Health check** endpoint for monitoring
+- ⚠️ **Global exception handling** for clean error responses
+- ⚡ **Maven wrapper** (no local Maven installation needed)
 
 ## 🚀 Quick Start
 
@@ -38,89 +42,136 @@ cp .env.example .env
 
 ## 📦 Environment Setup
 
-1. **Copy template:**
+1. **Copy environment template:**
    ```bash
    cp .env.example .env
    ```
 
-2. **Update `.env`:**
+2. **Update `.env` with your database details:**
    ```env
    DB_URL=jdbc:postgresql://localhost:5432/todos
    DB_USERNAME=postgres
    DB_PASSWORD=your_secure_password
    ```
 
-## 🗄 Database Setup
-
-**Automatic!** No manual SQL needed:
-
-```properties
-# application.properties
-spring.jpa.hibernate.ddl-auto=update
-```
-
-**Tables auto-created:**
-- `todos` (title, completed, user_id)
-- `users` (username, password)
+**Database tables (`todos`, `users`) are auto-created** via `spring.jpa.hibernate.ddl-auto=update`.
 
 ## 📁 Project Structure
 
 ```
 Todo/
 ├── src/main/java/com/minal/todo/
-│   ├── models/      # @Entity classes
+│   ├── TodoApplication.java              # Main Spring Boot app
+│   ├── config/
+│   │   └── SecurityConfig.java           # JWT Security configuration
+│   ├── controllers/                      # REST API Controllers
+│   │   ├── PublicController.java         # Public endpoints (/signup, /login)
+│   │   ├── UserController.java           # User management endpoints
+│   │   └── TodoController.java           # Todo CRUD operations
+│   ├── dto/                              # Data Transfer Objects
+│   │   ├── TodoRequestDTO.java
+│   │   ├── TodoUpdateDTO.java
+│   │   ├── UserRequestDTO.java
+│   │   └── UserUpdateDTO.java
+│   ├── exception/                        # Custom exceptions & handler
+│   │   ├── GlobalExceptionHandler.java
+│   │   ├── IncorrectPasswordException.java
+│   │   └── UserNotFoundException.java
+│   ├── filter/
+│   │   └── JwtRequestFilter.java         # JWT token validation filter
+│   ├── models/                           # JPA Entity classes
 │   │   ├── TodoModel.java
 │   │   └── UserModel.java
-│   ├── services/    # Business logic
-│   ├── controllers/ # REST API
-│   └── TodoApplication.java
+│   └── services/                         # Business logic
+│       ├── TodoServiceImpl.java
+│       └── UserServiceImpl.java
 ├── src/main/resources/
-│   └── application.properties
-├── .env.example    # ✅ COMMIT
-├── .env            # ❌ .gitignore
-├── pom.xml         # Dependencies + Lombok
+│   └── application.properties            # App configuration
+├── .env.example                          # ✅ COMMIT - Environment template
+├── .env                                  # ❌ .gitignore - Local secrets
+├── pom.xml                               # Dependencies (Lombok + springdoc-openapi)
+├── mvnw & mvnw.cmd                       # Maven wrapper
 └── README.md
 ```
 
-## 🌐 API Endpoints
-| Method | Endpoint         | Description                |
-| ------ | ---------------- |----------------------------|
-| GET    | /users           | List all users             |
-| GET    | /users/user1     | Get user by username       |
-| POST   | /users           | Create new user            |
-| GET    | /user1/todos      | Get todos for given user   |
-| GET    | /user1/todos/{id} | Get specific todo          |
-| POST   | /user1/todos      | Create todo for given user |
-| PUT    | /user1/todos/{id} | Update todo                |
-| DELETE | /user1/todos/{id} | Delete todo                |
+## 📖 Swagger Documentation
 
-**Example:**
-# Create user
-curl -X POST http://localhost:8080/users \
--H "Content-Type: application/json" \
--d '{"userName":"john","password":"secret123"}'
+**Interactive API documentation** is available at runtime:
 
-# Create todo for user
-curl -X POST http://localhost:8080/john/todos \
--H "Content-Type: application/json" \
--d '{"title":"Learn Spring Boot","completed":false}'
+1. **Swagger UI (Recommended):**
+   ```
+   http://localhost:8080/swagger-ui.html
+   or
+   http://localhost:8080/swagger-ui/index.html
+   ```
 
-# List user todos
-curl http://localhost:8080/john/todos
+2. **Raw OpenAPI JSON:**
+   ```
+   http://localhost:8080/v3/api-docs
+   ```
 
+3. **Using Swagger UI:**
+   - Test **Public APIs** first (`/signup`, `/login`, `/health-check`)
+   - Create account → Get **JWT Bearer token**
+   - Click **"Authorize"** button → Enter `Bearer <your-jwt-token>`
+   - Test **protected endpoints** (Admin/User APIs)
+
+**Pro Tip:** All endpoints are tagged (Public/Admin/User) and grouped in Swagger UI.
+
+## 🔐 Authentication Flow
+
+```
+1. POST /signup              → Create account
+   {"userName": "john", "password": "secret123"}
+
+2. POST /login               → Get JWT token
+   {"userName": "john", "password": "secret123"}
+   ↓ Returns: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+3. Use token in Authorization header:
+   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+## 🧪 Health Check
+
+**App monitoring endpoint:**
+```
+GET http://localhost:8080/health-check
+```
 
 ## 🧪 Development Commands
 
 ```bash
-# Compile & Test
+# Clean compile & run tests
 ./mvnw clean compile test
 
-# Build JAR
+# Build executable JAR
 ./mvnw clean package
 
-# Run JAR
+# Run JAR directly
 java -jar target/*.jar
 
-# Dev server with hot reload
+# Development server (hot reload)
 ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"
+
+# Generate Swagger docs only
+./mvnw springdoc-openapi:generate
 ```
+
+## 🔍 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **Port 8080 busy** | Kill process: `lsof -ti:8080 \| xargs kill -9` |
+| **DB connection failed** | Check PostgreSQL running & `.env` credentials |
+| **Swagger 404** | Wait for app startup (30-60s) or check logs |
+| **JWT 401** | Verify token not expired, correct `Bearer ` prefix |
+
+## 📋 API Tags Overview
+
+- **Public APIs** - No auth required (`/signup`, `/login`, `/health-check`)
+- **Todo APIs** - Auth required (CRUD operations on `/todos`)
+- **User APIs** - Auth required (user management on `/users`)
+- **Admin APIs** - Auth + Admin role (`/users/get-all`)
+
+**Full endpoint details → See Swagger UI!** 🎉
