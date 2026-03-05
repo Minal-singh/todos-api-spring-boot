@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteTodo(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
         userService.deleteUser(userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
